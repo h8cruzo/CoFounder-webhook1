@@ -1,28 +1,19 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-
+const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-app.post("/webhook", async (req, res) => {
-  const message = req.body.message || "No message received.";
-
-  console.log("Received from Make:", message);
-
-  // Example dummy AI response (replace this with Lovable fetch later)
-  const aiReply = `Your message was: "${message}" — thanks for reaching out!`;
-
-  res.json({ reply: aiReply });
+app.get('/', (req, res) => {
+  res.send('CoFounder Webhook Server is running!');
 });
 
-app.get("/", (req, res) => {
-  res.send("CoFounder Webhook is live.");
+app.post('/webhook', (req, res) => {
+  console.log('Received webhook:', req.body);
+  res.status(200).send('Webhook received');
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
+

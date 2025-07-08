@@ -1,30 +1,29 @@
 const express = require('express');
-const axios = require('axios');
+const fetch = require('node-fetch'); // note: not axios
 const app = express();
-const port = process.env.PORT || 3000;
-
-const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/50o6wnkj8a3gikoqsr42odvsa5o4ntu4';
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('CoFounder Webhook Server is running!');
-});
-
 app.post('/webhook', async (req, res) => {
+  console.log('Received webhook:', req.body);
+
   try {
-    console.log('Received webhook payload:', req.body);
+    const response = await fetch('https://hook.us2.make.com/50o6wnkj8a3gikoqsr42odvsa5o4ntu4', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body)
+    });
 
-    // Forward payload to Make webhook
-    await axios.post(MAKE_WEBHOOK_URL, req.body);
-
-    res.status(200).send('Payload received and forwarded.');
-  } catch (error) {
-    console.error('Error forwarding payload to Make:', error.message);
-    res.status(500).send('Error forwarding payload.');
+    const data = await response.text();
+    console.log('Response from Make:', data);
+    res.status(200).send('Forwarded to Make!');
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).send('Something went wrong');
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

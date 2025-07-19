@@ -2,6 +2,7 @@ const express = require('express');
 const fetch = require('node-fetch'); // note: not axios
 const app = express();
 
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.post('/webhook', async (req, res) => {
